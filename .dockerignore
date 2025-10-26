@@ -1,0 +1,17 @@
+# Dependencias locales
+node_modules
+
+# Código compilado localmente
+dist
+
+# Archivos de Git
+.git
+.gitignore
+
+# Archivos de Docker
+Dockerfile
+docker-compose.yml
+docker-compose.dev.yml
+
+# Variables de entorno locales
+.env

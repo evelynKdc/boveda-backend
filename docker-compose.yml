@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 1. El servicio de la aplicación Node.js
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/bovedaZKP
+      REDIS_URI: redis://redis:6379
+      JWT_SECRET: "ESTE_ES_UN_SECRETO_FUERTE_PARA_DOCKER"
+      PORT: 3000
+    depends_on:
+      - mongo
+      - redis
+    # Reinicia la app si falla
+    restart: unless-stopped
+
+  # 2. El servicio de la base de datos MongoDB
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+  # 3. El servicio de caché de Redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+
+# Volúmenes nombrados para persistir los datos
+volumes:
+  mongo-data:
+  redis-data:

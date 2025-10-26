@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      target: builder 
+    command: yarn run start:dev
+    volumes:
+      - .:/app
+      - /app/node_modules
