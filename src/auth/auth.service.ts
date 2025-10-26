@@ -2,10 +2,11 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { RegisterDto, VerifyDto } from './dto/register.dto';
+import { RegisterDto } from './dto/register.dto';
 import { User } from 'src/users/entities/user.entity';
 import { ChallengeDto } from './dto/challenge.dto';
 import { ZkpService } from 'src/zkp/zkp.service';
+import { VerifyDto } from './dto/verify.dto';
 
 
 @Injectable()
