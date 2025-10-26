@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    # No construyas la imagen, usa la del compose base y modifícala
+    build:
+      context: .
+      # Usa la etapa 'builder' como base, ya que tiene las devDependencies
+      target: builder 
+    # Sobrescribe el comando para usar el modo 'watch'
+    command: yarn run start:dev
+    volumes:
+      # Monta tu código fuente local dentro del contenedor
+      # El '.' significa 'directorio actual'
+      - .:/app
+      # Excluye node_modules para usar los del contenedor (evita conflictos de OS)
+      - /app/node_modules

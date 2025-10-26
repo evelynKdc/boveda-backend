@@ -1,0 +1,51 @@
+# Versión de la sintaxis de Docker Compose
+version: '3.8'
+
+services:
+  # 1. El servicio de tu aplicación NestJS
+  app:
+    # Construye la imagen usando el Dockerfile en el directorio actual
+    build: .
+    ports:
+      # Mapea el puerto 3000 de tu máquina al 3000 del contenedor
+      - "3000:3000"
+    environment:
+      # Pasamos las variables de entorno que la app necesita
+      MONGO_URI: mongodb://mongo:27017/bovedaZKP
+      REDIS_URI: redis://redis:6379
+      # Usa un secreto fuerte aquí o cárgalo desde un .env
+      JWT_SECRET: "ESTE_ES_UN_SECRETO_FUERTE_PARA_DOCKER"
+      PORT: 3000
+    depends_on:
+      # Le dice a Docker que inicie Mongo y Redis ANTES de iniciar la app
+      - mongo
+      - redis
+    # Reinicia la app si falla
+    restart: unless-stopped
+
+  # 2. El servicio de la base de datos MongoDB
+  mongo:
+    image: mongo:latest
+    ports:
+      # Opcional: expone el puerto de Mongo a tu máquina
+      - "27017:27017"
+    volumes:
+      # Persiste los datos de la base de datos en un volumen nombrado
+      - mongo-data:/data/db
+    restart: always
+
+  # 3. El servicio de caché de Redis
+  redis:
+    image: redis:alpine
+    ports:
+      # Opcional: expone el puerto de Redis a tu máquina
+      - "6379:6379"
+    volumes:
+      # Persiste los datos de Redis
+      - redis-data:/data
+    restart: always
+
+# Volúmenes nombrados para persistir los datos
+volumes:
+  mongo-data:
+  redis-data:
