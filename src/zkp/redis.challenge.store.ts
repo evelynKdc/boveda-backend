@@ -1,4 +1,3 @@
-// src/zkp/redis.challenge.store.ts
 import { Injectable, Inject } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { REDIS_CLIENT } from 'src/redis/redis.module';
@@ -9,7 +8,6 @@ export class RedisChallengeStore implements IChallengeStore {
   private readonly CHALLENGE_TTL_SECONDS = 60;
 
   constructor(
-    // Inyectamos el cliente Redis que provee nuestro RedisModule
     @Inject(REDIS_CLIENT) private readonly redisClient: Redis,
   ) {}
 
@@ -21,19 +19,16 @@ export class RedisChallengeStore implements IChallengeStore {
   async set(username: string, data: ChallengeData): Promise<void> {
     const key = this.getKey(username);
 
-    // Problema: Redis no almacena 'bigint'. Debemos serializar.
-    // Convertimos los bigints a strings para guardarlos en JSON.
     const dataToStore = {
       t: data.t.toString(),
       c: data.c.toString(),
     };
     const serializedData = JSON.stringify(dataToStore);
 
-    // Guardamos en Redis con 'EX' (expire)
     await this.redisClient.set(
       key,
       serializedData,
-      'EX', // 'EX' significa "expire en segundos"
+      'EX',
       this.CHALLENGE_TTL_SECONDS,
     );
   }

@@ -9,8 +9,6 @@ import { ZkpData } from 'src/users/entities/user.entity';
 import * as crypto from 'crypto';
 
 // 1. Creamos un Mock del Store
-// Esto simula ser el 'InMemoryChallengeStore' o 'RedisStore'.
-// Usamos 'jest.fn()' para espiar las llamadas.
 const mockChallengeStore: IChallengeStore = {
   set: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(undefined),
@@ -18,11 +16,9 @@ const mockChallengeStore: IChallengeStore = {
 };
 
 // 2. Mock de 'crypto.randomInt'
-// Esto es VITAL. Si no lo hacemos, no podemos predecir
-// el valor 'c' y la prueba sería no-determinista.
 jest.mock('crypto', () => ({
-  ...jest.requireActual('crypto'), // Importa y mantiene el resto de crypto
-  randomInt: jest.fn(), // Sobreescribe solo randomInt
+  ...jest.requireActual('crypto'),
+  randomInt: jest.fn(),
 }));
 const mockedCrypto = crypto as jest.Mocked<typeof crypto>;
 
@@ -37,8 +33,6 @@ describe('ZkpService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ZkpService,
-        // Le decimos a NestJS que cuando pida 'CHALLENGE_STORE',
-        // use nuestro 'mockChallengeStore' en lugar del real.
         {
           provide: CHALLENGE_STORE,
           useValue: mockChallengeStore,
@@ -74,7 +68,6 @@ describe('ZkpService', () => {
       expect(mockedCrypto.randomInt).toHaveBeenCalledWith(1, 1000000);
 
       // Afirmación 3: ¿Guardó los datos correctos en el store?
-      // Esta es la prueba más importante.
       expect(mockChallengeStore.set).toHaveBeenCalledWith(username, {
         t: t_bigint,
         c: c_random_bigint,
@@ -114,7 +107,7 @@ describe('ZkpService', () => {
       // 3. Afirmaciones
       expect(isValid).toBe(true);
       expect(mockChallengeStore.get).toHaveBeenCalledWith(username);
-      // Debe borrar el desafío *después* de usarlo
+      // Debe borrar el desafío después de usarlo
       expect(mockChallengeStore.delete).toHaveBeenCalledWith(username);
       expect(mockChallengeStore.delete).toHaveBeenCalledTimes(1);
     });

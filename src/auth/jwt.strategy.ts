@@ -19,7 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // El payload es el objeto que firmamos en el servicio de auth
     return { userId: payload.sub, username: payload.username };
   }
 }

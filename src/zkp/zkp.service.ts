@@ -1,4 +1,3 @@
-// src/zkp/zkp.service.ts
 import { Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { modPow } from 'bigint-mod-arith';
@@ -6,7 +5,6 @@ import { ZkpData } from 'src/users/entities/user.entity';
 import {
     CHALLENGE_STORE,
     IChallengeStore,
-    ChallengeData,
 } from './challenge.store';
 
 
@@ -28,10 +26,9 @@ export class ZkpService {
         t: string,
     ): Promise<{ c: string }> {
         const t_bigint = BigInt(t);
-        // Generamos un desafío aleatorio 'c'
+        //  Desafío aleatorio 'c'
         const c_bigint = BigInt(crypto.randomInt(1, 1000000));
 
-        // Almacenamos 't' y 'c' para la verificación
         await this.challengeStore.set(username, { t: t_bigint, c: c_bigint });
 
         return { c: c_bigint.toString() };
@@ -51,7 +48,6 @@ export class ZkpService {
         s: string,
         zkpData: ZkpData,
     ): Promise<boolean> {
-        // 1. Recuperar el desafío
         const challenge = await this.challengeStore.get(username);
         if (!challenge) {
             return false; // Desafío no encontrado o expirado
@@ -60,7 +56,6 @@ export class ZkpService {
         // El desafío es de un solo uso. 
         await this.challengeStore.delete(username);
 
-        // 2. Convertir todos los valores a BigInt para aritmética
         const { t, c } = challenge;
         const s_bigint = BigInt(s);
         const { publicKeyY, p, g } = zkpData;
@@ -69,14 +64,13 @@ export class ZkpService {
         const p_bigint = BigInt(p);
         const g_bigint = BigInt(g);
 
-        // 3. Calcular el lado izquierdo: g^s (mod p)
+        // lado izquierdo: g^s (mod p)
         const ladoIzquierdo = modPow(g_bigint, s_bigint, p_bigint);
 
-        // 4. Calcular el lado derecho: t * y^c (mod p)
+        // lado derecho: t * y^c (mod p)
         const y_elevado_c = modPow(y_bigint, c, p_bigint);
         const ladoDerecho = (t * y_elevado_c) % p_bigint;
 
-        // 5. Comparar
         return ladoIzquierdo === ladoDerecho;
     }
 }
