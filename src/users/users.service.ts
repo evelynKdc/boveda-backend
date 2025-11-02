@@ -20,4 +20,13 @@ export class UsersService {
     const newUser = new this.userModel({ username, zkp: zkpData });
     return newUser.save();
   }
+
+
+  /**
+   * Busca un usuario por su ID de Mongoose.
+   */
+  async findById(userId: string): Promise<User | undefined> {
+    const user = await this.userModel.findById(userId).exec();
+    return user ?? undefined;
+  }
 }

@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { VaultModule } from './vault/vault.module';
 import { ZkpModule } from './zkp/zkp.module';
 import { RedisModule } from './redis/redis.module';
+import { PasswordsModule } from './passwords/passwords.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { RedisModule } from './redis/redis.module';
     VaultModule,
     ZkpModule,
     RedisModule,
+    PasswordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

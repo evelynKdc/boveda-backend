@@ -37,7 +37,7 @@ export class AuthService {
     );
   }
 
-  async verify(verifyDto: VerifyDto): Promise<{ accessToken: string }> {
+  async verify(verifyDto: VerifyDto): Promise<{ accessToken: string, user: User }> {
     const user = await this.usersService.findOne(verifyDto.username);
     if (!user) {
       throw new UnauthorizedException('Verificación fallida');
@@ -56,6 +56,7 @@ export class AuthService {
     const payload = { username: user.username, sub: user._id };
     return {
       accessToken: this.jwtService.sign(payload),
+      user,
     };
   }
 }
